@@ -7,6 +7,12 @@ $octal_conv = @{'7'=7;'6'=6;'5'=5;'4'=4;'3'=3;'2'=2;'1'=1;'0'=0}
 
 $octal_to_hex_conv = @{}
 
+$deci_to_hex = @{0='0';1='1';2='2';3='3';4='4';5='5';6='6';7='7';8='8';9='9';10='a';11='b';12='c';13='d';14='e';15='f' }
+
+$deci_to_bin = @{0='0';1='1'}
+
+$deci_to_oct = @{0='0';1='1';2='2';3='3';4='4';5='5';6='6';7='7'}
+
 
 $hex_conv = @{'0'=0;'1'=1;'2'=2;'3'=3;'4'=4;'5'=5;'6'=6;'7'=7;'8'=8;'9'=9;'a'=10;'b'=11;'c'=12;'d'=13;'e'=14;'f'=15}
 
@@ -26,9 +32,9 @@ function check_binary([string]$input_str){
 }
 
 function check_decimal([string]$input_str){
-    Write-Host $input_str
+    #Write-Host $input_str
     foreach($char in $input_str.ToCharArray()){
-        Write-Host "char $char"
+        #Write-Host "char $char"
         if($char -notin ('0','1','2','3','4','5','6','7','8','9') ){
             return $false
         }        
@@ -81,6 +87,8 @@ $number = Read-Host "Podaj liczbe"
 
 [int]$sum = 0
 
+[string]$str_sum = ''
+
 [bool]$error_flag = $false
 
 [int]$conv = 0
@@ -97,19 +105,24 @@ switch ($conversion_choice)
                     $sum += [int]$binary_conv."$($number[$i])" * [Math]::Pow(2,($number.Length - $i -1))
                                                             
                 }
+
+                $str_sum = [string]$sum
                 
             }else{
                 Write-Host "Not a binary number"
                 $error_flag = $true
             }
         }    
-    '2' {
+    '2' { # nie bangla 
             if(check_binary $number){                
-                for($i = 0;$i -lt $number.Length;$i++){
-                    
+                for($i = $number.Length;$i -gt 0;$i=$i-4){
+                Write-Host "i = $i; number = $number "
+                                                                                                         
                     $sum += [int]$binary_conv."$($number[$i])" * [Math]::Pow(2,($number.Length - $i -1)) 
 
                 }
+                $sum
+                $str_sum = [string]$sum
                 
             }else{
                 Write-Host "Not a binary number"
@@ -117,22 +130,111 @@ switch ($conversion_choice)
             }
             
         }
+    '3' { # nie bangla 
+            if(check_binary $number){                
+                for($i = $number.Length;$i -gt 0;$i=$i-4){
+                    
+                    $number.Substring($i-4,4)                    
+                    
+                    $sum += [int]$binary_conv."$($number[$i])" * [Math]::Pow(2,($number.Length - $i -1)) 
+                }
 
-    '4' {
+                $str_sum = [string]$sum
+                
+            }else{
+                Write-Host "Not a binary number"
+                $error_flag = $true
+            }
+            
+        }
+    '4' {  # jest ok 
             if(check_decimal $number){
-                Write-host "Decimal"
+                Write-host "Decimal to hex"                
+
+                $pow = 0
+
+                while($number / [Math]::Pow(16,$pow) -ge 16){
+                    $pow ++                    
+                }
+
+                #Write-Host $pow
+
+                for($i = $pow;$i -ge 0; $i--){
+                     $tmp = ($number / [Math]::Pow(16,$i) ) % 16
+                     
+                     $tmp = [Math]::Floor($tmp)
+                     
+                     $str_sum += $deci_to_hex.$([int]$tmp)
+                     
+                     
+                     
+                }                
+
             }else{
                 Write-Host "Not a decimal number"
+                $error_flag = $true
             }
         }
-     '7' {
-            if(check_octal $number){
-                Write-host "Octal"
+    '5' { # jest ok
+            if(check_decimal $number){
+                Write-host "Decimal to binary"                
+
+                $pow = 0
+
+                while($number / [Math]::Pow(2,$pow) -ge 2){
+                    $pow ++                    
+                }
+
+                #Write-Host $pow
+
+                for($i = $pow;$i -ge 0; $i--){
+                     $tmp = ($number / [Math]::Pow(2,$i) ) % 2
+                     #Write-Host "i = $i; tmp = $tmp"
+                     
+                     $tmp = [Math]::Floor($tmp)
+
+                     #Write-Host "i = $i; tmp = $tmp"
+                     
+                     $str_sum += $deci_to_bin.$([int]$tmp)                                        
+                     
+                }                
+
             }else{
-                Write-Host "Not a octal number"
+                Write-Host "Not a decimal number"
+                $error_flag = $true
+            }
+        
+        }
+    '6' {
+            if(check_decimal $number){
+                Write-host "Decimal to binary"                
+
+                $pow = 0
+
+                while($number / [Math]::Pow(8,$pow) -ge 8){
+                    $pow ++                    
+                }
+
+                #Write-Host $pow
+
+                for($i = $pow;$i -ge 0; $i--){
+                     $tmp = ($number / [Math]::Pow(8,$i) ) % 8
+                     #Write-Host "i = $i; tmp = $tmp"
+                     
+                     $tmp = [Math]::Floor($tmp)
+
+                     #Write-Host "i = $i; tmp = $tmp"
+                     
+                     $str_sum += $deci_to_oct.$([int]$tmp)                                        
+                     
+                }                
+
+            }else{
+                Write-Host "Not a decimal number"
+                $error_flag = $true
             }
         }
-      '9' {
+    '9' {
             if(check_octal $number){
                 
                 for($i = 0;$i -lt $number.Length;$i++){
@@ -146,13 +248,15 @@ switch ($conversion_choice)
             }
          }
            
-     '10' {
+     '11' {
             if(check_hex $number){
                 
                 for($i = 0;$i -lt $number.Length;$i++){
                     
                     $sum += [int]$hex_conv."$($number[$i])" * [Math]::Pow(16,($number.Length - $i -1))                                                           
                 }
+
+                $str_sum = [string]$sum
                 
             }else{
                 Write-Host "Not a hex number"
@@ -167,7 +271,7 @@ switch ($conversion_choice)
 
 if(-not $error_flag){
 
-    Write-Host "Sum $sum"
+    Write-Host "Sum $str_sum"
 }
 
 
