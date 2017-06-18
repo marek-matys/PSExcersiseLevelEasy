@@ -64,7 +64,41 @@ function check_hex([string]$input_str){
     return $true
 }
 
+function create_system_charArray([int]$input_system){
+    
+    $out = @()
 
+    for($i=0;$i -lt $input_system;$i++){
+            if($i -lt 10){
+                $out += $i.ToString()
+            }
+            else{
+                $out += [char](65-10+$i)
+            }
+
+    }
+    return $out
+
+}
+
+function check_number([string]$input_str,[char[]]$systemCharArray){
+    #Write-Host $input_str
+
+    #Write-Host $input_str
+    #Write-Host $input_system.GetType()
+    #write-host $systemCharArray
+    
+    foreach($char in $input_str.ToCharArray()){
+        #Write-Host "char $char"
+        if($char -inotin $systemCharArray ){
+            return $false
+        }        
+    }
+    return $true
+}
+
+
+<#
 $menu_str = @"
 1. Binary to Decimal
 2. Binary to Hex
@@ -80,9 +114,29 @@ $menu_str = @"
 12. Hex to Octal
 "@
 
-$menu_str
+#>
+
+<#$menu_str#>
 $conversion_choice = Read-Host "Wybierz opcje"
-$number = Read-Host "Podaj liczbe"
+
+$system1 = Read-Host "Podaj system zrodlowy (gorne ograniczenie)"
+
+$number = Read-Host "Podaj liczbe w systemie zrodlowym"
+
+$systemInCharArray = create_system_charArray $system1
+
+if(check_number $number $systemInCharArray){
+    #Write-Host "OK liczba"
+}else{
+    Write-Host "Liczba z poza systemu"
+    break
+}
+
+$system2 = Read-Host "Podaj system docelowy (gorne ograniczenie)"
+ 
+$systemOutCharArray = create_system_charArray $system2
+
+
 
 
 [int]$sum = 0
@@ -92,6 +146,8 @@ $number = Read-Host "Podaj liczbe"
 [bool]$error_flag = $false
 
 [int]$conv = 0
+
+<#
 
 switch ($conversion_choice)
 {
@@ -263,11 +319,28 @@ switch ($conversion_choice)
                 $error_flag = $true
             }
         }
+       '12' {
+            if(check_hex $number){
+                
+                for($i = 0;$i -lt $number.Length;$i++){
+                    
+                    $sum += [int]$hex_conv."$($number[$i])" * [Math]::Pow(16,($number.Length - $i -1))                                                           
+                }
+
+                $str_sum = [string]$sum
+                
+            }else{
+                Write-Host "Not a hex number"
+                $error_flag = $true
+            }
+        }
     Default {
         Write-Host "GFY"
         break
     }
 }
+
+#>
 
 if(-not $error_flag){
 
