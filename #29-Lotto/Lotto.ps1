@@ -57,6 +57,7 @@ while($true){
 
     $hits_count = 0
     $input_automatic = generate_random_num_array $numbers_count $minimum $maximum
+    #$input_automatic = $input_automatic | Sort-Object
     $number_of_drawings++
 
     #if(check_input $input_automatic $numbers_count){
@@ -66,8 +67,8 @@ while($true){
             }   
         }
 
-        if($hits_count -gt 4){
-            Write-Host "Liczba hitow:$hits_count Numer losowania:$number_of_drawings"
+        if($hits_count -gt 3){
+            Write-Host "Liczba hitow:$hits_count Numer losowania:$number_of_drawings prawdopodobienstwo $hits_count/$number_of_drawings"
 
         }
 
