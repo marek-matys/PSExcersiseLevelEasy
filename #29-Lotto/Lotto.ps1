@@ -3,11 +3,9 @@
 function check_input([int[]]$input_str,[int]$num_count){
     
    # Write-Host "input: $input_str" # uwaga - zmienna o tej samej nazwie nie moze wystepowac w innej czesci skryptu
-    if($input_str.Length -ne $num_count -or ($input_str|Select-Object -Unique |measure).Count -ne $num_count){
+    if($input_str.Length -ne $num_count -or ($input_str|Select-Object -Unique |Measure-Object).Count -ne $num_count){
         return $false
-    }
-
-    $num_array = @()
+    }    
 
     foreach($in in $input_str){            
     
@@ -42,14 +40,13 @@ $maximum = 50
 
 $random_numbers = generate_random_num_array $numbers_count $minimum $maximum
 
-$random_numbers_sorted = $random_numbers | Sort-Object 
-$random_numbers_sorted
+#$random_numbers_sorted = $random_numbers | Sort-Object 
+#$random_numbers_sorted
 
 #$input = Read-Host "Podaj $numbers_count liczby oddzielone spacjami"
 
 #$input_splitted = $input -split " "
 #$input_splitted = $input_splitted | % { [int]::Parse($_) }
-
 
 $number_of_drawings = 0
 
@@ -59,22 +56,18 @@ while($true){
     $input_automatic = generate_random_num_array $numbers_count $minimum $maximum
     #$input_automatic = $input_automatic | Sort-Object
     $number_of_drawings++
+   
+    #$hits_count = Compare-Object $input_automatic $random_numbers_sorted -IncludeEqual -ExcludeDifferent -PassThru | Measure-Object | Select-Object -ExpandProperty Count                                
+    $hits_count = (Compare-Object $input_automatic $random_numbers -IncludeEqual -ExcludeDifferent).inputobject.Count
 
-    #if(check_input $input_automatic $numbers_count){
-        foreach($num in $random_numbers_sorted) { # czy sorted szybsze niz unsorted ?
-            if($input_automatic -contains $num){
-                $hits_count++
-            }   
-        }
-
-        if($hits_count -gt 3){
-            Write-Host "Liczba hitow:$hits_count Numer losowania:$number_of_drawings prawdopodobienstwo $hits_count/$number_of_drawings"
-
-        }
-
-    #}else{
-    #    Write-host "Bledne liczby lub ich za duzo"
-    #}
+    if($hits_count -gt 4){
+        Write-Host "Liczba hitow:$hits_count Numer losowania:$number_of_drawings"
+        if($hits_count -eq 6){
+            Write-Host "Liczba hitow:$hits_count Numer losowania:$number_of_drawings"
+            break
+        }  
+    }
+    
 
 }
 
