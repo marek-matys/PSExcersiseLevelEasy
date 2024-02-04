@@ -22,7 +22,7 @@ function generate_random_num_array([int]$numbers_count){
 
 $numbers_count = 6
 $minimum = 1
-$maximum = 50
+$maximum = 49
 $possibleNumbers = $minimum..$maximum
 
 $random_numbers = generate_random_num_array $numbers_count
